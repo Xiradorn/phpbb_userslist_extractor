@@ -1,3 +1,8 @@
+# Created by https://www.gitignore.io/api/indo,windows,linux,osx
+
+#!! ERROR: indo is undefined. Use list command to see defined gitignore types !!#
+
+### Windows ###
 # Windows image file caches
 Thumbs.db
 ehthumbs.db
@@ -17,16 +22,28 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 
-# =========================
-# Operating System Files
-# =========================
 
-# OSX
-# =========================
+### Linux ###
+*~
 
+# temporary files which can be created if a process still has a handle open of a deleted file
+.fuse_hidden*
+
+# KDE directory preferences
+.directory
+
+# Linux trash folder which might appear on any partition or disk
+.Trash-*
+
+
+### OSX ###
 .DS_Store
 .AppleDouble
 .LSOverride
+
+# Icon must end with two \r
+Icon
+
 
 # Thumbnails
 ._*

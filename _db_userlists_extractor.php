@@ -6,7 +6,7 @@
 * other user cannot launch the script
 * @package userslist Extractor
 * @author Xiradorn <http://xiradorn.it>
-* @version 1.0.0
+* @version 1.1.0
 *
 */
 

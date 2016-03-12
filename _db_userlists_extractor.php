@@ -88,7 +88,8 @@ function _db_user_extractor($direct_download = true, $type = "text") {
 
 	// user query extracting but first we determine the number of field
 	$sql = "SELECT COUNT(username) as counter
-	FROM " . USERS_TABLE;
+			FROM " . USERS_TABLE . "
+			WHERE user_type LIKE 0 OR user_type LIKE 3";
 
 	$result = $db->sql_query($sql);
 
@@ -99,11 +100,12 @@ function _db_user_extractor($direct_download = true, $type = "text") {
 
 	$userstring = '';
 	for ($i = 0; $i < $row_num; $i+=100) {
+		$ic = $i + 99;
 		$sql = "SELECT username
 				FROM " . USERS_TABLE . "
 				WHERE user_type LIKE 0 OR user_type LIKE 3
 				ORDER BY username ASC
-				LIMIT 0, {$i}";
+				LIMIT {$i}, {$ic}";
 
 		$result = $db->sql_query($sql);
 

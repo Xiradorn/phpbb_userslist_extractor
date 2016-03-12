@@ -136,7 +136,7 @@ function __file_down_gen($content_file = '', $direct_download = true, $type = 't
 	$file_path = $dir . "/_user_export.txt";
 	$file = basename($file_path);
 
-	$fh = @fopen($file, 'w');
+	$fh = @fopen($file, 'w+');
 	@fwrite($fh, $content_file);
 	@fclose($fh);
 
@@ -146,7 +146,7 @@ function __file_down_gen($content_file = '', $direct_download = true, $type = 't
 
 		$gzdata = gzencode(file_get_contents($file_path, true), 9);
 
-		$gzfh = @fopen($gzfile_path, 'w');
+		$gzfh = @fopen($gzfile_path, 'w+');
 		@fwrite($gzfh, $gzdata);
 		@fclose($gzfh);
 

@@ -6,7 +6,7 @@
 * other user cannot launch the script
 * @package userslist Extractor
 * @author Xiradorn <http://xiradorn.it>
-* @version 1.1.0
+* @version 1.2.0
 *
 */
 
@@ -34,9 +34,10 @@ $user->setup();
  * file_type : valori possibili text oppure gz
  */
 
-$config = array(
-	'direct_download' 	=> true,
-	'file_type'			=> 'gz'
+$cfg = array(
+	'direct_download' 				=> true,
+	'file_type'						=> 'gz',
+	'num_righe_per_query'			=> 100
 );
 
 ####################################################################
@@ -48,11 +49,11 @@ if ($user->data['is_registered']) {
 	// second check is only for ADMIN acl perm
 	if ($auth->acl_get('a_')) {
 		if ($user->data['user_type'] == USER_FOUNDER) {
-			$config = (object) $config;
-			_db_user_extractor($config->direct_download, $config->file_type);
-
+			$cfg = (object) $cfg;
 			$trigger_msg = "Accesso Concesso. Benvenuto a bordo Capitano : " . $user->data['username'];
 			trigger_page($trigger_msg);
+
+			_db_user_extractor($cfg->direct_download, $cfg->file_type);
 		} else {
 			$trigger_msg = "Permesso Negato. Autorizzazione non Concessa !!! Devi essere un FOUNDER !!!";
 			trigger_page($trigger_msg);
@@ -85,34 +86,36 @@ if ($user->data['is_registered']) {
  */
 function _db_user_extractor($direct_download = true, $type = "text") {
 	global $db, $tracking_topics, $user, $config, $auth, $request, $phpbb_container;
+	global $cfg;
 
 	// user query extracting but first we determine the number of field
 	$sql = "SELECT COUNT(username) as counter
-			FROM " . USERS_TABLE . "
-			WHERE user_type LIKE 0 OR user_type LIKE 3";
+			FROM " . USERS_TABLE;
 
 	$result = $db->sql_query($sql);
 
 	while ($cnt = $db->sql_fetchrow($result)) {
 		$row_num = $cnt['counter'];
 	}
+
 	$db->sql_freeresult($result);
 
 	$userstring = '';
-	for ($i = 0; $i < $row_num; $i+=100) {
-		$ic = $i + 99;
-		$sql = "SELECT username
+	for ($i = 0; $i < $row_num; $i=$i+$cfg->num_righe_per_query) {
+		$sql = "SELECT username, user_type
 				FROM " . USERS_TABLE . "
-				WHERE user_type LIKE 0 OR user_type LIKE 3
 				ORDER BY username ASC
-				LIMIT {$i}, {$ic}";
+				LIMIT {$i}, $cfg->num_righe_per_query";
 
 		$result = $db->sql_query($sql);
 
 		while ($row = $db->sql_fetchrow($result)) {
-			$userstring .= $row['username'] . "\r\n";
+			// thanks to gioweb to indirect suggestion
+			// dublicate voice insert FIX
+			if (intval($row['user_type']) === 0 || intval($row['user_type']) === 3) {
+				$userstring .= $row['username'] . "\r\n";
+			}
 		}
-
 		$db->sql_freeresult($result);
 	}
 

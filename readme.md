@@ -10,9 +10,11 @@ Un semplice estrattore di utenti per phpbb.
 Nel file sono presenti due parametri
 ```
 $config = array(
-	'direct_download' 	=> true,
-	'file_type'			=> 'gz'
+	'direct_download' 	            => true,
+	'file_type'                     => 'gz',
+    'num_righe_per_query'           => 100
 );
 ```
-Il primo serve per configurare se scaricare direttamente (true) o sul server (false).
-Il secondo serve per scaricare un file di tipo gzip (gz) o testo (text).
+Il Primo serve per configurare se scaricare direttamente (true) o sul server (false).
+Il Secondo serve per scaricare un file di tipo gzip (gz) o testo (text).
+Il Terzo vi permette di usare meno query ma più grandi. Non superate i 500 se avete un host economico

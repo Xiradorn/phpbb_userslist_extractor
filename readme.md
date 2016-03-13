@@ -32,6 +32,7 @@ Queso parametro vi permette di effettuare più o meno query. Valori consigliati 
 **exclude_usernames_id**  
 Questo parametro è un Array. Vi permette di escludere alcuni nomi dalla vostra lista inserendo gli USER_ID da escludere dal vostro elenco.  
 Questo parametro è prioritario rispetto a _**exclude_usernames**_ quindi non riempitelo se volete usare l'escusione tramite Username.  
+
 _**Esempio**_
 ```
 $cfg = array(
@@ -46,7 +47,9 @@ $cfg = array(
 
 **exclude_usernames**  
 Questo parametro è un Array. Vi permette di escludere alcuni nomi dalla vostra lista inserendo gli Username da escludere dal vostro elenco.  
-Questo parametro è secondario rispetto al precedente.  
+Questo parametro è secondario rispetto al precedente.
+
+_**Esempio**_ 
 ```
 $cfg = array(
 	'file_type'						=> 'txt',

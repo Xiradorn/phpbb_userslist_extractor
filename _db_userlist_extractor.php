@@ -36,10 +36,10 @@ $user->setup();
  */
 
 $cfg = array(
-	'file_type'						=> 'bz2',
+	'file_type'						=> 'txt',
 	'num_righe_per_query'			=> 100,
-	'exclude_usernames_id'			=> array(),
-	'exclude_usernames'				=> array()
+	'exclude_usernames'				=> array(),
+	'exclude_usernames_id'			=> array()
 );
 
 ####################################################################
@@ -69,7 +69,7 @@ if (isset($mode) && $mode === 'Scarica') {
 
 	if ($file_check) {
 		$trigger_msg = "Link File: ";
-		$trigger_msg = "<a href=\"$file_dwn\">" . basename($file_dwn) . "</a>";
+		$trigger_msg = "<a target=\"_blank\" href=\"$file_dwn\">" . basename($file_dwn) . "</a>";
 		$ok_token = true;
 	} else {
 		$trigger_msg = "File Non Presente. Ripeti il processo";
@@ -155,10 +155,21 @@ function _db_user_extractor($direct_download = true, $type = "text") {
 	$db->sql_freeresult($result);
 
 	for ($i = 0; $i < $row_num; $i+=$cfg->num_righe_per_query) {
-		$sql = "SELECT username, user_type
-				FROM " . USERS_TABLE . "
-				ORDER BY username ASC
-				LIMIT {$i}, $cfg->num_righe_per_query";
+		$sql  = "SELECT username, user_type";
+		$sql .= " FROM " . USERS_TABLE;
+
+		// check if the ary exceprion is empty or not
+		// IMPORTANT ary of username id are prioritary on the username
+		if (!empty($cfg->exclude_usernames_id)) {
+			$ary_user = implode(', ', array_map('__quote_val_for_ary', $cfg->exclude_usernames_id));
+			$sql .= " WHERE user_id NOT IN ($ary_user)";
+		} elseif (!empty($cfg->exclude_usernames)) {
+			$ary_user = implode(', ', array_map('__quote_val_for_ary', $cfg->exclude_usernames));
+			$sql .= " WHERE username NOT IN ($ary_user)";
+		}
+
+		$sql .= " ORDER BY username ASC";
+		$sql .= " LIMIT {$i}, $cfg->num_righe_per_query";
 
 		$result = $db->sql_query($sql);
 
@@ -251,6 +262,10 @@ function __file_delete($file_path_ary = array()) {
 	}
 }
 
+function __quote_val_for_ary($val) {
+	return "'" . $val . "'";
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -263,6 +278,17 @@ function __file_delete($file_path_ary = array()) {
 
 	<style>
 	@import url(https://fonts.googleapis.com/css?family=Roboto:400,300,500,700);
+
+	::-moz-selection {
+		color: white;
+		background-color: #FF3535;
+	}
+
+	::selection {
+		color: white;
+		background-color: #FF3535;
+	}
+
 	html, body {
 		background-color: #DBDBDB;
 		font-family: "Roboto";
@@ -270,6 +296,7 @@ function __file_delete($file_path_ary = array()) {
 		padding: 0;
 		width: 100%;
 		position: relative;
+		font-size: 1em;
 	}
 	.form_container {
 		border: 1px solid #D1D1D1;
@@ -297,6 +324,7 @@ function __file_delete($file_path_ary = array()) {
 	 	color: white;
 		text-transform: uppercase;
 		margin-bottom: 10px;
+		cursor: pointer;
 	}
 
 	input:hover {
@@ -315,6 +343,22 @@ function __file_delete($file_path_ary = array()) {
 		background-color: #90F9B7;
 		border: 1px solid #49F488;
 	}
+
+	a, a:link, a:visited {
+		color: crimson;
+		text-decoration: none;
+	}
+	a:hover {
+		color: firebrick;
+		text-decoration: underline;
+	}
+
+	.copyright {
+		border-top: 1px solid #D1D1D1;
+		padding-top: 10px;
+		font-size: .8em;
+	}
+
 	</style>
 </head>
 <body>
@@ -348,9 +392,7 @@ function __file_delete($file_path_ary = array()) {
 				</div>
 			</form>
 		<?php endif; ?>
-		<p>
-			Sir Xiradorn &copy; 2016 - <a href="http://xiradorn.it" alt="Xiradorn Lab">Xiradorn Lab</a>
-		</p>
+		<p class="copyright">Sir Xiradorn &copy; 2016 - <a target="_blank" href="http://xiradorn.it" alt="Xiradorn Lab">Xiradorn Lab</a></p>
 	</div>
 </body>
 </html>

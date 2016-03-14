@@ -12,9 +12,9 @@ E' anche escludere nomi dal proprio elenco attraverso il loro username o anche l
 Nel file sono presenti due parametri
 ```
 $cfg = array(
-	'file_type'						=> 'txt',
+	'file_type'				=> 'txt',
 	'num_righe_per_query'			=> 100,
-	'exclude_usernames'				=> array(),
+	'exclude_usernames'			=> array(),
 	'exclude_usernames_id'			=> array()
 );
 ```
@@ -36,12 +36,12 @@ Questo parametro è prioritario rispetto a _**exclude_usernames**_ quindi non ri
 _**Esempio**_
 ```
 $cfg = array(
-	'file_type'						=> 'txt',
+	'file_type'				=> 'txt',
 	'num_righe_per_query'			=> 100,
-	'exclude_usernames'				=> array(
+	'exclude_usernames_id'			=> array(
 		'10', '22', '234'
 	),
-	'exclude_usernames_id'			=> array()
+	'exclude_usernames'			=> array()
 );
 ```
 
@@ -52,10 +52,10 @@ Questo parametro è secondario rispetto al precedente.
 _**Esempio**_ 
 ```
 $cfg = array(
-	'file_type'						=> 'txt',
+	'file_type'				=> 'txt',
 	'num_righe_per_query'			=> 100,
-	'exclude_usernames'				=> array(),
-	'exclude_usernames_id'			=> array(
+	'exclude_usernames_id'			=> array(),
+	'exclude_usernames'			=> array(
 		'Xiradorn', 'User1', 'Tester'
 	)
 );

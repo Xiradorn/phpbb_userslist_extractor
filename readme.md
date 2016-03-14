@@ -3,9 +3,9 @@ Un comodo script, perfettamente integrato in phpBB, che permette l'estrazione de
 E' possibile configurare il file con tre estensioni possibili: testuale ( txt ), gzip ( gz ) e bzip2 ( bz2 )  
 E' anche escludere nomi dal proprio elenco attraverso il loro username o anche lo user_id.
 
-### Come usare il file
+### Installazione
 * Scaricate il file,
-* Copiate nella root,
+* Copiate il file '_db_userlist_extractor.php' nella root,
 * lanciate e bon voyage.
 
 ### Configurazione

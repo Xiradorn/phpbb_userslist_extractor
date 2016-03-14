@@ -8,12 +8,11 @@
 *
 * @package userslist Extractor
 * @author Xiradorn <http://xiradorn.it>
-* @version 2.0.0
+* @version 2.1.0
 *
 */
 
 
-// phpbb start stuff
 /**
 * @ignore
 */
@@ -32,9 +31,12 @@ $user->setup();
 
 /**
  * Configura i valori
- * file_type : valori possibili txt, gz, bz2
+ * File_type 				: valori possibili txt, gz, bz2
+ * num_righe_per_query 		: valori piccoli se usate host economici
+ * exclude_usernames 		: Array con gli username da escludere
+ * exclude_usernames_id 	: Array con gli user_id da escludere
+ * @var array
  */
-
 $cfg = array(
 	'file_type'						=> 'txt',
 	'num_righe_per_query'			=> 100,
@@ -99,9 +101,14 @@ if (isset($mode) && $mode === 'Scarica') {
 #
 #######################################################
 
+/**
+ * Exposed function for FOUNDER check controll and recall gen function
+ * @param  string &$trigger_msg template string
+ * @param  bool &$ok_token    templating controll var
+ * @return bool               templating controll var
+ */
 function phpbb_userlist_extractor(&$trigger_msg, &$ok_token) {
-	global $db, $tracking_topics, $user, $config;
-	global $auth, $request, $phpbb_container;
+	global $db, $user, $config, $auth, $request, $phpbb_container;
 	global $cfg, $file_path, $phar_path;
 
 	// first check only for registered users
@@ -113,25 +120,27 @@ function phpbb_userlist_extractor(&$trigger_msg, &$ok_token) {
 				$trigger_msg = "Accesso Concesso. Benvenuto a bordo Capitano : " . $user->data['username'];
 				$ok_token = true; // used into template
 
-				_db_user_extractor($cfg->direct_download, $cfg->file_type);
+				_db_user_extractor($cfg->file_type);
 			} else {
 				$trigger_msg = "Permesso Negato. Autorizzazione non Concessa !!! Devi essere un FOUNDER !!!";
-				exit();
 			}
 		} else {
 			$trigger_msg = "Permesso Negato. Autorizzazione non Concessa !!! Solo gli Admin possono passare alla prossima verifica";
-			exit();
 		}
 	} else {
 		$trigger_msg = "Permesso Negato. Autorizzazione non Concessa !!! Loggati per il Check di Controllo";
-		exit();
 	}
 }
 
-
-function _db_user_extractor($direct_download = true, $type = "text") {
-	global $db, $tracking_topics, $user, $config;
-	global $auth, $request, $phpbb_container;
+/**
+ * Tecnical function for basic file generation and query controll
+ * this controll also the exclude clausole for eliminate users from
+ * the entire list with username or user_id (prioritary)
+ * @param  string  $type            filetype string txt|gz|bz2
+ * @return bool                   	return true val
+ */
+function _db_user_extractor($type = "text") {
+	global $db, $user, $config, $auth, $request, $phpbb_container;
 	global $cfg, $file_path, $phar_path;
 
 	// file reset on the server
@@ -187,8 +196,19 @@ function _db_user_extractor($direct_download = true, $type = "text") {
 	if ($cfg->file_type === 'gz' or $cfg->file_type === 'bz2' or $cfg->file_type === 'tar') {
 		__file_manager('', 2, $cfg->file_type);
 	}
+
+	return true;
 }
 
+/**
+ * File Manager. Allow to create a basic text file for iteration cycle 
+ * or allow to compress the final txt file into a .tar.gz file
+ * or a .tar.bz2 file with the help of phar class
+ * @param  string  $content a content of string added to the txt file
+ * @param  integer $mode    mode of function. 1 txt base file builder for cycle | 2 comprssor mode
+ * @param  string  $ext     extension filter txt|gz|bz2
+ * @return bool           return true
+ */
 function __file_manager($content = '', $mode = 1, $ext = '') {
 	global $file_path, $phar_path;
 	$file_name = basename($file_path);
@@ -214,8 +234,6 @@ function __file_manager($content = '', $mode = 1, $ext = '') {
 				// at the end
 				@fwrite($fh, $content_file);
 				@fclose($fh);
-
-				return true;
 			}
 
 			break;
@@ -246,8 +264,15 @@ function __file_manager($content = '', $mode = 1, $ext = '') {
 			echo "Nessuna funzionalità particolare";
 			break;
 	}
+
+	return true;
 }
 
+/**
+ * Simple file distroyer
+ * @param  array  $file_path_ary Array with the disk path of file
+ * @return bool                return true
+ */
 function __file_delete($file_path_ary = array()) {
 	foreach ($file_path_ary as $file_path) {
 		if (file_exists($file_path)) {
@@ -262,6 +287,11 @@ function __file_delete($file_path_ary = array()) {
 	}
 }
 
+/**
+ * Support function for exclude user from query in array map use
+ * @param  string $val Value
+ * @return string      Value with a single quote
+ */
 function __quote_val_for_ary($val) {
 	return "'" . $val . "'";
 }
